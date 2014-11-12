@@ -12,7 +12,7 @@ class Player
 end
 
 class Match
-  attr_accessor :court, :last_player, :player_number, :ball_position, :player1, :player2, :zero_or_one, :player_array, :current_player
+  attr_accessor :court, :last_player, :ball_position, :player1, :player2, :zero_or_one, :current_player
   attr_reader :blank_court
 
   def initialize(args)
@@ -26,10 +26,8 @@ class Match
     @court = @blank_court
     @player1 = args[:player1]
     @player2 = args[:player2]
-    @player_array = [@player1, @player2]
-    @player_number = 0
-    @winner = nil
     @current_player = @player1
+    # @winner = nil ## will need something like this once I get there.
   end
 
   def play_rally
@@ -38,25 +36,18 @@ class Match
     else
       @current_player = @player1
     end
-    # call hit on whichever player was not last
-    # call hit method from player class
-    # which will return some rand index
-    # put "o" at rand index on @court
-    # check if there's a winner
-
-    # last_player(@player_number)
-    # update_position
+    # not sure why, but the above code isn't working properly when I take out the @ symbols, So I am leaving them there for now. Would like to understand what is going on tho. Thanks!
     update_position
     print_court
   end
 
   def update_position
-    ball_position = @current_player.hit + ((@current_player.id - 1) * 270)
+    ball_position = current_player.hit + ((current_player.id - 1) * 270)
     court[ball_position] = "o"
   end
 
-  def game_over?
-  end
+  # def game_over?
+  # end ## would need something like this once I get to having points, a game ending, etc. Maybe I would make a class for Score? And call it in the Match class.
 
   def print_court
     print "player 1's side"
@@ -73,7 +64,8 @@ class Match
   end
 
   def reset_court
-    @blank_court
+    blank_court
+    #my court is not resetting to the blank court...not sure why. I want the ball to move on the court, aka disappear from where it last was when it reappears on the other side of the court after being hit. Before I had COURT as a constant and it was a string representation of the blank court, but that wasn't working so I tried this way, as an attr_reader of the Match class. I also had tried making a class Court and making the blank court be an instance variable that it initializes. But I am not sure if that makes more sense than this anyways.
   end
 
 end
@@ -90,6 +82,10 @@ class Controller
       sleep(0.5)
       n+=1
     end
+    # ideall this would be more like:
+    # until there is a winner,
+    # keep calling play_rally and printing the court out
+    # end
   end
 end
 
@@ -103,15 +99,12 @@ class View
     def clear_screen
       puts "\e[H\e[2J"
     end
-
-
   end
-
+# #plan for View class:
 # #greeting
 # #continuously print the reset court
 # #clear
 # #print the score
-
 
 end
 
