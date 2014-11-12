@@ -1,3 +1,12 @@
+
+$COURT = "_"*20 +
+          ("|" + " "*18 + "|")*4 +
+          ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
+          ("|" + " "*4 + "|" + "_"*8 + "|" + " "*4 + "|") +
+          ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
+          ("|" + " "*18 + "|")*4 +
+          "_"*20
+
 class Player
   attr_reader :id
 
@@ -16,14 +25,14 @@ class Match
   attr_reader :blank_court
 
   def initialize(args)
-    @blank_court = "_"*20 +
-          ("|" + " "*18 + "|")*4 +
-          ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
-          ("|" + " "*4 + "|" + "_"*8 + "|" + " "*4 + "|") +
-          ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
-          ("|" + " "*18 + "|")*4 +
-          "_"*20
-    @court = @blank_court
+    # @blank_court = "_"*20 +
+    #       ("|" + " "*18 + "|")*4 +
+    #       ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
+    #       ("|" + " "*4 + "|" + "_"*8 + "|" + " "*4 + "|") +
+    #       ("|" + " "*4 + "|" + " "*8 + "|" + " "*4 + "|")*8 +
+    #       ("|" + " "*18 + "|")*4 +
+    #       "_"*20
+    @court = $COURT.dup
     @player1 = args[:player1]
     @player2 = args[:player2]
     @current_player = @player1
@@ -38,7 +47,6 @@ class Match
     end
     # not sure why, but the above code isn't working properly when I take out the @ symbols, So I am leaving them there for now. Would like to understand what is going on tho. Thanks!
     update_position
-    print_court
   end
 
   def update_position
@@ -49,24 +57,7 @@ class Match
   # def game_over?
   # end ## would need something like this once I get to having points, a game ending, etc. Maybe I would make a class for Score? And call it in the Match class.
 
-  def print_court
-    print "player 1's side"
-    (0..court.length).each do |i|
-      if i % 20 == 0
-        print "\n"
-        print court[i]
-      else
-        print court[i]
-      end
-    end
-    print "\nplayer 1's side"
-    court = reset_court
-  end
 
-  def reset_court
-    blank_court
-    #my court is not resetting to the blank court...not sure why. I want the ball to move on the court, aka disappear from where it last was when it reappears on the other side of the court after being hit. Before I had COURT as a constant and it was a string representation of the blank court, but that wasn't working so I tried this way, as an attr_reader of the Match class. I also had tried making a class Court and making the blank court be an instance variable that it initializes. But I am not sure if that makes more sense than this anyways.
-  end
 
 end
 
@@ -79,6 +70,8 @@ class Controller
     until n == 10
       View.clear_screen
       match.play_rally
+      View.print_court
+      View.reset_court
       sleep(0.5)
       n+=1
     end
@@ -91,14 +84,34 @@ end
 
 
 class View
-  class << self
-    def greeting
-      print "welcome to the tennis game from my dream from last night."
-    end
 
-    def clear_screen
-      puts "\e[H\e[2J"
+
+  def self.greeting
+    print "welcome to the tennis game from my dream from last night."
+  end
+
+  def self.clear_screen
+    puts "\e[H\e[2J"
+  end
+
+  def self.print_court
+    court = $COURT.dup
+    print "player 1's side"
+    (0..court.length).each do |i|
+      if i % 20 == 0
+        print "\n"
+        print court[i]
+      else
+        print court[i]
+      end
     end
+    print "\nplayer 1's side"
+
+  end
+
+  def self.reset_court
+    court = $COURT
+    #my court is not resetting to the blank court...not sure why. I want the ball to move on the court, aka disappear from where it last was when it reappears on the other side of the court after being hit. Before I had COURT as a constant and it was a string representation of the blank court, but that wasn't working so I tried this way, as an attr_reader of the Match class. I also had tried making a class Court and making the blank court be an instance variable that it initializes. But I am not sure if that makes more sense than this anyways.
   end
 # #plan for View class:
 # #greeting
@@ -108,6 +121,5 @@ class View
 
 end
 
-controller = Controller.new
 Controller.play
 
